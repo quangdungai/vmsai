@@ -1,0 +1,17 @@
+# VMS247 MVP1 — MODEL deps (cài khi làm plugin thật).
+# Cài torch theo đúng CUDA của máy: https://pytorch.org/get-started/locally/
+# vd (CUDA 12.1):
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+
+# --- Track 0 baseline ---
+ultralytics>=8.3            # YOLO11 (M1 person, M2 fire, M3 hardhat) + YOLO-World
+insightface>=0.7           # M4 buffalo_l (SCRFD + ArcFace)
+onnxruntime-gpu>=1.18      # backend insightface (đổi onnxruntime nếu CPU)
+
+# --- M4 store (Phase 1a có thể dùng SQLite; pgvector khi cần) ---
+# psycopg[binary]>=3.2
+# pgvector>=0.3
+
+# --- Track 1 designated (Phase 1b, chạy trên cloud) ---
+# vllm                     # serving LocateAnything-3B
+# DEIMv2-Wholebody49: theo hướng dẫn repo upstream (cài trên cloud GPU)

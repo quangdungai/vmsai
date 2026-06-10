@@ -1,0 +1,58 @@
+# VMS247 MVP1 — cấu hình mặc định.
+# Toạ độ ROI/zone/line theo PIXEL (x, y), gốc trên-trái.
+# Mỗi block module dùng chung cho cả baseline lẫn designated (plugin đọc .get có default).
+
+target_fps: 5.0          # sample đầu vào (3-5 FPS cho giám sát)
+
+# Track 1 (designated, Phase 1b) chạy CLOUD — endpoint do Lead cấp khi tới Phase 1b
+#   vlm_endpoint:   URL vLLM serving LocateAnything-3B (vd http://<ip>:8000)
+#   wholebody_onnx: ONNX export DEIMv2-Wholebody49 (vd models/wholebody49.onnx)
+
+M1:                      # Xâm nhập
+  roi: [[704,0],[1280,0],[1280,720],[704,720]]   # MẪU khớp demo_intrusion.mp4 (1280x720): nửa PHẢI — trùng khung magenta vẽ sẵn trong video. Người sang phải (khung ~112-179) = dương, đứng bên trái = âm. Chỉnh lại theo camera thật.
+  line: null             # vd: [[100,500],[900,500]]
+  conf_thr: 0.35
+  debounce_s: 1.0
+  cooldown_s: 15.0
+  # --- designated ---
+  vlm_endpoint: null
+  vlm_model: locate-anything-3b
+  wholebody_onnx: null
+  vehicle_classes: [forklift, truck, car, motorbike]
+  trigger_every: 5       # gọi VLM mỗi N frame (triggered/low-FPS)
+
+M2:                      # Cháy/khói
+  model_path: models/fire_yolo.pt   # thiếu file -> fallback YOLO-World zero-shot
+  conf_thr: 0.35
+  debounce_s: 2.5
+  cooldown_s: 30.0
+  # --- designated ---
+  vlm_endpoint: null
+  vlm_model: locate-anything-3b
+  trigger_every: 3
+  verify: true           # xác minh từng candidate -> cắt báo giả hàn/hơi nước
+
+M3:                      # PPE mũ
+  model_path: models/hardhat_yolo.pt
+  conf_thr: 0.4
+  debounce_s: 1.5
+  cooldown_s: 20.0
+  zones: []              # vùng bắt buộc đội mũ (list polygon)
+  # --- designated ---
+  wholebody_onnx: null
+
+M4:                      # Chấm công
+  threshold: 0.45        # cosine sim ngưỡng match
+  db_path: data/enroll/faces.npz
+  log_cooldown_s: 300    # 1 người log lại sau N giây (production: theo ca/ngày)
+  # --- designated ---
+  wholebody_onnx: null
+  db_path_designated: data/enroll/faces_designated.npz
+
+# --- CASCADE (Tier-2): VLM hậu kiểm event của baseline để cắt báo giả ---
+# Khác toggle designated: baseline (Tier-1) vẫn chạy, VLM chỉ verify TRÊN EVENT.
+cascade:
+  enabled: false
+  vlm_endpoint: null            # http://<cloud-ip>:8000 (vLLM LocateAnything-3B)
+  vlm_model: locate-anything-3b
+  verify_types: [fire, smoke]   # loại event sẽ verify (intrusion/ppe_violation cũng được)

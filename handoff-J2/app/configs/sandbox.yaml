@@ -1,0 +1,30 @@
+# VMS247 — cấu hình gọn cho sandbox_run (chỉ key baseline).
+# Toạ độ ROI/zone/line theo PIXEL (x, y), gốc trên-trái.
+# Cấu hình đầy đủ (cả designated/cascade): configs/default.yaml.
+
+target_fps: 5.0          # sample đầu vào (3-5 FPS cho giám sát)
+
+M1:                      # Xâm nhập (Lane B)
+  roi: []                # vd: [[100,400],[900,400],[900,700],[100,700]]
+  line: null             # vd: [[100,500],[900,500]]
+  conf_thr: 0.35
+  debounce_s: 1.0
+  cooldown_s: 15.0
+
+M2:                      # Cháy/khói (Lane B)
+  model_path: models/fire_yolo.pt   # thiếu file -> fallback YOLO-World zero-shot
+  conf_thr: 0.35
+  debounce_s: 2.5
+  cooldown_s: 30.0
+
+M3:                      # PPE mũ (Lane A)
+  model_path: models/hardhat_yolo.pt
+  conf_thr: 0.4
+  debounce_s: 1.5
+  cooldown_s: 20.0
+  zones: []              # vùng bắt buộc đội mũ (list polygon)
+
+M4:                      # Chấm công (Lane A)
+  threshold: 0.45        # cosine sim ngưỡng match
+  db_path: data/enroll/faces.npz
+  log_cooldown_s: 300

@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Data & model weights (KHÔNG commit — nặng + nhạy cảm/privacy)
+data/videos/
+data/evidence/
+data/enroll/
+data/events.jsonl
+models/
+*.pt
+*.onnx
+*.engine
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+.env
