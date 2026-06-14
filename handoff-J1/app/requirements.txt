@@ -1,9 +1,0 @@
-# VMS247 MVP1 — SHELL deps (chạy được không cần CUDA).
-# Model nặng tách sang requirements-models.txt để import shell không kéo torch.
-opencv-python>=4.9
-numpy>=1.26
-gradio>=4.44
-pandas>=2.0
-pyyaml>=6.0
-supervision>=0.22,<0.30   # ROI/line-cross/annotate. Pin <0.30: sv.ByteTrack deprecated ở 0.28, gỡ ở 0.30
-nvidia-ml-py>=12.0     # đọc VRAM (pynvml)
